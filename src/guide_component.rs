@@ -3,9 +3,22 @@ use dioxus::{
     prelude::*,
 };
 
+#[derive(serde::Deserialize)]
+struct DogApi {
+    message: String,
+}
+
 #[component]
 pub fn DogApp(breed: String) -> Element {
-    tracing::info!("Rendered with breed: {breed}");
+    let mut img = use_resource(|| async move {
+        reqwest::get("https://dog.ceo/api/breeds/image/random")
+            .await
+            .unwrap()
+            .json::<DogApi>()
+            .await
+            .unwrap()
+            .message
+    });
 
     rsx! {
         div {
@@ -19,13 +32,17 @@ pub fn DogApp(breed: String) -> Element {
             div {
                 id: "dogview",
                 class: "w-md",
-                img { src: "https://images.dog.ceo/breeds/pitbull/dog-3981540_1280.jpg" }
+                img { src: img.cloned().unwrap_or_default() }
             }
             div { class: "h-4" }
             div {
                 class: "space-x-4",
-                button { class: "btn btn-primary", "Skip" },
-                button { class: "btn ", "Save" }
+                button {
+                    onclick: move |_| img.restart(),
+                    class: "btn btn-primary", "Skip",  },
+                button {
+                    onclick: move |_| img.restart(),
+                    class: "btn ", "Save, " }
             }
         }
     }
