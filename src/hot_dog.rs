@@ -1,5 +1,3 @@
-use std::fs::OpenOptions;
-
 use dioxus::{
     logger::tracing::{self},
     prelude::*,
@@ -11,7 +9,7 @@ struct DogApi {
 }
 
 #[component]
-pub fn DogApp(breed: String) -> Element {
+pub fn DogApp() -> Element {
     let mut img = use_resource(|| async move {
         reqwest::get("https://dog.ceo/api/breeds/image/random")
             .await
