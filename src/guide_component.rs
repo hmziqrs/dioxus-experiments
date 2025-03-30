@@ -1,3 +1,5 @@
+use std::fs::OpenOptions;
+
 use dioxus::{
     logger::tracing::{self},
     prelude::*,
@@ -41,14 +43,29 @@ pub fn DogApp(breed: String) -> Element {
                     onclick: move |_| img.restart(),
                     class: "btn btn-primary", "Skip",  },
                 button {
-                    onclick: move |_| img.restart(),
+                    onclick:  move |_| async move {
+                        let image = img.cloned().unwrap();
+                        img.restart();
+                        _ = save_dog(image).await;
+                    },
                     class: "btn ", "Save, " }
             }
         }
     }
 }
 
-// #[derive(Debug, Clone, PartialEq)]
-// pub struct DogAppProps {
-//     pub breed: String,
-// }
+#[server]
+async fn save_dog(image: String) -> Result<(), ServerFnError> {
+    use std::io::Write;
+
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .create(true)
+        .open("dogs.txt")
+        .unwrap();
+
+    file.write_fmt(format_args!("{image}\n"));
+
+    Ok(())
+}
