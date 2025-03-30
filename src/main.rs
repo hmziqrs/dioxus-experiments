@@ -3,7 +3,7 @@ use guide_component::DogApp;
 
 pub mod guide_component;
 
-static CSS: Asset = asset!("/assets/main.css");
+static CSS: Asset = asset!("/assets/tailwind.css");
 
 fn main() {
     dioxus::launch(App);

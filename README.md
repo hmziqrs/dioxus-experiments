@@ -10,8 +10,22 @@ Run the following command in the root of your project to start developing with t
 dx serve
 ```
 
-To run for a different platform, use the `--platform platform` flag. E.g.
+# Tailwind/Bun:
+
 ```bash
-dx serve --platform desktop
+bun install
 ```
 
+```bash
+bunx --bun @tailwindcss/cli -i input.css -o assets/tailwind.css --watch
+```
+
+# Tailwind/Npm:
+
+```bash
+npm install
+```
+
+```bash
+npx tailwindcss -i input.css -o assets/tailwind.css --watch
+```
