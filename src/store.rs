@@ -1,11 +1,11 @@
 use async_std::task;
 use dioxus::logger::tracing;
 use dioxus::prelude::*;
-use once_cell::sync::Lazy;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use std::thread;
 use std::time::Duration;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -16,7 +16,7 @@ pub enum StateStatus {
     Failed,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct StateSlice<T: Clone> {
     pub status: StateStatus,
     pub data: Option<T>,
@@ -104,7 +104,11 @@ impl<T: Clone + 'static> Store<T> {
     }
 
     /// Create a hook to access the store in Dioxus components
-    pub fn use_store<S, Selector>(store: &Rc<Self>, selector: impl Fn(&T) -> S + 'static) -> S
+    // pub fn use_store<S, Selector>(store: &Rc<Self>, selector: impl Fn(&T) -> S + 'static) -> S
+    // where
+    //     S: Clone + PartialEq + 'static,
+    // {
+    pub fn use_store<S>(store: &Rc<Self>, selector: impl Fn(&T) -> S + 'static) -> S
     where
         S: Clone + PartialEq + 'static,
     {
@@ -115,7 +119,7 @@ impl<T: Clone + 'static> Store<T> {
         // Subscribe to store changes
 
         // Store reference needed for both hooks
-        let store = store.clone();
+        // let store = store.clone();
 
         // Create subscription and store the unsubscribe function
         let unsubscribe = store.subscribe(move || {
@@ -151,13 +155,13 @@ where
 }
 
 // Example usage for AuthStore
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct User {
     pub id: u32,
     pub name: String,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct AuthState {
     pub user: Option<User>,
     pub login_status: StateSlice<bool>,
@@ -206,8 +210,7 @@ impl AuthActions {
             state.login_status.message = None;
         });
 
-        // Simulate an asynchronous login request
-        // task::sleep(Duration::from_millis(200)).await;
+        thread::sleep(Duration::from_secs(1));
 
         // Simulate a successful login
         if email == "user@example.com" && password == "password" {
@@ -224,8 +227,9 @@ impl AuthActions {
                 state.login_status.message = Some("Invalid email or password".to_string());
             });
         }
-        let check = self.store.get_state().clone();
-        tracing::info!("AUTH ACTIONS login finish, {check:?}");
+        // let check = self.store.get_state().clone();
+        let checkx = use_auth_store().get_state();
+        tracing::info!("AUTH ACTIONS login finish, {checkx:?}");
     }
 
     pub async fn logout(&self) {

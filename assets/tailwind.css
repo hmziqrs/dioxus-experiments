@@ -1826,6 +1826,9 @@
   .z-6 {
     z-index: 6;
   }
+  .z-8 {
+    z-index: 8;
+  }
   .tab-content {
     order: var(--tabcontent-order);
     display: none;
@@ -1865,6 +1868,9 @@
     @media (width >= 96rem) {
       max-width: 96rem;
     }
+  }
+  .m-1 {
+    margin: calc(var(--spacing) * 1);
   }
   .m-2 {
     margin: calc(var(--spacing) * 2);

@@ -1,18 +1,16 @@
 use dioxus::{logger::tracing, prelude::*};
 
-use crate::store::{use_auth_actions, use_auth_store};
+use crate::store::{use_auth_actions, use_auth_store, AuthState, Store};
 
 #[component]
 pub fn LoginScreen() -> Element {
     let mut email = use_signal(|| "user@example.com".to_string());
     let mut password = use_signal(|| "password".to_string());
     let auth_store = use_auth_store();
-    let auth_state = auth_store.get_state();
-    let mut auth_actions = use_auth_actions(&auth_store);
-    // println!("login_component: {:?}", auth_state.login_status);
-    let s = auth_state.login_status;
+    let auth_state = Store::use_store(&auth_store, |s| s.clone());
+    let auth_actions = use_auth_actions(&auth_store);
 
-    tracing::info!("{email} {password} {s:?}");
+    tracing::info!("{email} {password} {auth_state:?}");
 
     rsx! {
         div {
