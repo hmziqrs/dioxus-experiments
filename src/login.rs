@@ -1,4 +1,4 @@
-use dioxus::{logger::tracing, prelude::*};
+use dioxus::{html::textarea::disabled, logger::tracing, prelude::*};
 
 use crate::store::{use_auth_actions, use_auth_store, AuthState, Store};
 
@@ -10,7 +10,9 @@ pub fn LoginScreen() -> Element {
     let auth_state = Store::use_store(&auth_store, |s| s.clone());
     let auth_actions = use_auth_actions(&auth_store);
 
-    tracing::info!("{email} {password} {auth_state:?}");
+    let loading = auth_state.login_status.is_loading();
+
+    tracing::info!("{email} {password} {loading:?}");
 
     rsx! {
         div {
@@ -47,6 +49,11 @@ pub fn LoginScreen() -> Element {
                                     oninput: move |e| password.set(e.value().clone())
                                 }
                             },
+                        }
+                        if loading {
+                                div {
+                                    class: "loading loading-spinner loading-lg",
+                                }
                         }
                         div {
                             class: "card-actions justify-end",

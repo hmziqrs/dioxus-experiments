@@ -5,6 +5,7 @@ use dioxus_router::prelude::*;
 mod home;
 mod hot_dog;
 mod login;
+mod server;
 mod store;
 
 use home::HomePage;

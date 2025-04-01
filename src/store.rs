@@ -1,3 +1,4 @@
+use crate::server;
 use async_std::task;
 use dioxus::logger::tracing;
 use dioxus::prelude::*;
@@ -5,7 +6,6 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use std::thread;
 use std::time::Duration;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -210,7 +210,7 @@ impl AuthActions {
             state.login_status.message = None;
         });
 
-        thread::sleep(Duration::from_secs(1));
+        // _ = server::fix_timeout().await;
 
         // Simulate a successful login
         if email == "user@example.com" && password == "password" {
