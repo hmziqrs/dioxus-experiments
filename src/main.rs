@@ -4,9 +4,12 @@ use dioxus_router::prelude::*;
 
 mod home;
 mod hot_dog;
+mod login;
+mod store;
 
 use home::HomePage;
 use hot_dog::DogApp;
+use login::LoginScreen;
 
 static CSS: Asset = asset!("/assets/tailwind.css");
 
@@ -21,11 +24,14 @@ enum Routes {
 
     #[route("/hot_dog")]
     DogApp {},
+
+    #[route("/login")]
+    LoginScreen {},
 }
 
 #[component]
 pub fn NavBar() -> Element {
-    let nav_items = vec![("Home", "/"), ("Hot Dog", "/hot_dog")];
+    let nav_items = vec![("Home", "/"), ("Hot Dog", "/hot_dog"), ("Login", "/login")];
 
     rsx! {
         nav {
