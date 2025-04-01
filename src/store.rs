@@ -210,7 +210,7 @@ impl AuthActions {
             state.login_status.message = None;
         });
 
-        // _ = server::fix_timeout().await;
+        _ = reqwest::get("http://localhost:3000/").await;
 
         // Simulate a successful login
         if email == "user@example.com" && password == "password" {
