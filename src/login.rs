@@ -1,9 +1,18 @@
-use dioxus::prelude::*;
+use dioxus::{logger::tracing, prelude::*};
+
+use crate::store::{use_auth_actions, use_auth_store};
 
 #[component]
 pub fn LoginScreen() -> Element {
-    let mut email = use_signal(|| "".to_string());
-    let mut password = use_signal(|| "".to_string());
+    let mut email = use_signal(|| "user@example.com".to_string());
+    let mut password = use_signal(|| "password".to_string());
+    let auth_store = use_auth_store();
+    let auth_state = auth_store.get_state();
+    let mut auth_actions = use_auth_actions(&auth_store);
+    // println!("login_component: {:?}", auth_state.login_status);
+    let s = auth_state.login_status;
+
+    tracing::info!("{email} {password} {s:?}");
 
     rsx! {
         div {
@@ -20,6 +29,7 @@ pub fn LoginScreen() -> Element {
                             label {
                                 class: "input",
                                 input {
+                                    value: email.read().clone(),
                                     type: "email",
                                     name: "email",
                                     class: "grow",
@@ -31,6 +41,7 @@ pub fn LoginScreen() -> Element {
                             label {
                                 class: "input",
                                 input {
+                                    value: password.read().clone(),
                                     type: "password",
                                     name: "password",
                                     class: "grow",
@@ -43,7 +54,19 @@ pub fn LoginScreen() -> Element {
                             class: "card-actions justify-end",
                             button {
                                 class: "btn btn-primary",
-                                "Login"
+                                onclick: move |_| {
+                                    // Clone the values we need to pass to the async block
+                                    let email_value = email.read().clone();
+                                    let password_value = password.read().clone();
+                                    let actions = auth_actions.clone();
+
+                                    spawn(async move {
+                                        tracing::info!("login clicked");
+                                        actions.login(&email_value, &password_value).await;
+                                    });
+
+                                },
+                                "Login",
                             }
                         }
                     }

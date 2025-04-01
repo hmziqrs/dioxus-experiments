@@ -1,5 +1,7 @@
 use async_std::task;
+use dioxus::logger::tracing;
 use dioxus::prelude::*;
+use once_cell::sync::Lazy;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
@@ -14,7 +16,7 @@ pub enum StateStatus {
     Failed,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct StateSlice<T: Clone> {
     pub status: StateStatus,
     pub data: Option<T>,
@@ -149,13 +151,13 @@ where
 }
 
 // Example usage for AuthStore
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct User {
     pub id: u32,
     pub name: String,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct AuthState {
     pub user: Option<User>,
     pub login_status: StateSlice<bool>,
@@ -174,62 +176,76 @@ impl Default for AuthState {
 
 pub type AuthStore = Rc<Store<AuthState>>;
 
+thread_local! {
+    static AUTH_STORE: std::cell::OnceCell<AuthStore>  = std::cell::OnceCell::new();
+}
+
+pub fn use_auth_store() -> AuthStore {
+    AUTH_STORE.with(|store| {
+        store
+            .get_or_init(|| Store::new(AuthState::default()))
+            .clone()
+    })
+}
+
 // Create the auth store
 pub fn create_auth_store() -> AuthStore {
     Store::new(AuthState::default())
 }
 
+#[derive(Clone)]
+pub struct AuthActions {
+    store: AuthStore,
+}
+
+impl AuthActions {
+    pub async fn login(&self, email: &str, password: &str) {
+        tracing::info!("Auth Actions: Logging in");
+        self.store.set(|state| {
+            state.login_status.status = StateStatus::Loading;
+            state.login_status.message = None;
+        });
+
+        // Simulate an asynchronous login request
+        // task::sleep(Duration::from_millis(200)).await;
+
+        // Simulate a successful login
+        if email == "user@example.com" && password == "password" {
+            self.store.set(|state| {
+                state.login_status.status = StateStatus::Success;
+                state.user = Some(User {
+                    id: 1,
+                    name: "John Doe".to_string(),
+                });
+            });
+        } else {
+            self.store.set(|state| {
+                state.login_status.status = StateStatus::Failed;
+                state.login_status.message = Some("Invalid email or password".to_string());
+            });
+        }
+        let check = self.store.get_state().clone();
+        tracing::info!("AUTH ACTIONS login finish, {check:?}");
+    }
+
+    pub async fn logout(&self) {
+        self.store.set(|state| {
+            state.logout_status.status = StateStatus::Loading;
+        });
+
+        // Simulate an asynchronous logout request
+        task::sleep(Duration::from_secs(2)).await;
+
+        self.store.set(|state| {
+            state.logout_status.status = StateStatus::Success;
+            state.user = None;
+        });
+    }
+}
+
 // Auth store actions
-pub fn use_auth_actions(store: &AuthStore) -> impl Clone {
+pub fn use_auth_actions(store: &AuthStore) -> AuthActions {
     let store = store.clone();
-
-    #[derive(Clone)]
-    struct AuthActions {
-        store: AuthStore,
-    }
-
-    impl AuthActions {
-        pub async fn login(&self, email: &str, password: &str) {
-            self.store.set(|state| {
-                state.login_status.status = StateStatus::Loading;
-                state.login_status.message = None;
-            });
-
-            // Simulate an asynchronous login request
-            task::sleep(Duration::from_secs(2)).await;
-
-            // Simulate a successful login
-            if email == "user@example.com" && password == "password" {
-                self.store.set(|state| {
-                    state.login_status.status = StateStatus::Success;
-                    state.user = Some(User {
-                        id: 1,
-                        name: "John Doe".to_string(),
-                    });
-                });
-            } else {
-                self.store.set(|state| {
-                    state.login_status.status = StateStatus::Failed;
-                    state.login_status.message = Some("Invalid email or password".to_string());
-                });
-            }
-        }
-
-        pub async fn logout(&self) {
-            self.store.set(|state| {
-                state.logout_status.status = StateStatus::Loading;
-            });
-
-            // Simulate an asynchronous logout request
-            task::sleep(Duration::from_secs(2)).await;
-
-            self.store.set(|state| {
-                state.logout_status.status = StateStatus::Success;
-                state.user = None;
-            });
-        }
-    }
-
     AuthActions { store }
 }
 
