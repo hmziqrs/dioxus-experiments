@@ -1,18 +1,25 @@
 use dioxus::{html::textarea::disabled, logger::tracing, prelude::*};
 
-use crate::store::{use_auth_actions, use_auth_store, AuthState, Store};
+use crate::{
+    store::{use_auth_actions, use_auth_store, AuthState, Store},
+    use_form::{use_form, LoginForm},
+};
 
 #[component]
 pub fn LoginScreen() -> Element {
+    let mut form = use_form(LoginForm::new());
     let mut email = use_signal(|| "user@example.com".to_string());
     let mut password = use_signal(|| "password".to_string());
+
     let auth_store = use_auth_store();
     let auth_state = Store::use_store(&auth_store, |s| s.clone());
     let auth_actions = use_auth_actions(&auth_store);
 
     let loading = auth_state.login_status.is_loading();
 
-    tracing::info!("{email} {password} {loading:?}");
+    let r = form.read();
+
+    tracing::info!("{r:?}");
 
     rsx! {
         div {

@@ -7,6 +7,7 @@ mod hot_dog;
 mod login;
 mod server;
 mod store;
+mod use_form;
 
 use home::HomePage;
 use hot_dog::DogApp;
