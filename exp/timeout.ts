@@ -2,7 +2,7 @@ import { Server } from "bun";
 
 const server = Bun.serve({
   port: 3000,
-  async fetch(req) {
+  async fetch(req: Request) {
     const url = new URL(req.url);
 
     // Check if it's a GET request to the root path
@@ -13,7 +13,14 @@ const server = Bun.serve({
           resolve(
             new Response(JSON.stringify({ message: "success" }), {
               status: 200,
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods":
+                  "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",
+                "Access-Control-Max-Age": "86400", // 24 hours
+              },
             }),
           );
         }, 1000); // 1 second timeout
