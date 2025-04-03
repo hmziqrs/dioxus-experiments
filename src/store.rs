@@ -203,7 +203,7 @@ pub struct AuthActions {
 }
 
 impl AuthActions {
-    pub async fn login(&self, email: &str, password: &str) {
+    pub async fn login(&self, email: String, password: String) {
         tracing::info!("Auth Actions: Logging in");
         self.store.set(|state| {
             state.login_status.status = StateStatus::Loading;

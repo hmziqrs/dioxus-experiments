@@ -15,9 +15,7 @@ pub fn LoginScreen() -> Element {
 
     let loading = auth_state.login_status.is_loading();
 
-    let r = form.read();
-
-    tracing::info!("{r:?}");
+    // tracing::info!("{r:?}");
 
     rsx! {
         div {
@@ -86,7 +84,7 @@ pub fn LoginScreen() -> Element {
 
                                     spawn(async move {
                                         tracing::info!("login clicked");
-                                        actions.login(&email, &password).await;
+                                        actions.login(email, password).await;
                                     });
 
                                 },
