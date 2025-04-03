@@ -7,14 +7,19 @@ use crate::screens::*;
 #[rustfmt::skip]
 pub enum Route {
     #[layout(ContainerNavBar)]
-        #[route("/")]
-        HomeScreen {},
+    #[route("/")]
+    HomeScreen {},
 
-        #[route("/about")]
-        AboutScreen {},
+    #[route("/about")]
+    AboutScreen {},
 
-        #[route("/login")]
-        LoginScreen {},
+    #[route("/login")]
+    LoginScreen {},
+
+    #[route("/profile")]
+    ProfileScreen {},
+
+
     // #[end_layout]
 
     // #[route("/:..route")]

@@ -59,6 +59,6 @@ impl AuthState {
 
 static AUTH_STATE: OnceLock<AuthState> = OnceLock::new();
 
-pub fn use_auth_state() -> &'static AuthState {
+pub fn use_auth() -> &'static AuthState {
     AUTH_STATE.get_or_init(|| AuthState::new())
 }

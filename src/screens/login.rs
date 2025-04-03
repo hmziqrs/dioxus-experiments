@@ -1,10 +1,10 @@
 use dioxus::{logger::tracing, prelude::*};
 
-use crate::stores::auth::use_auth_state;
+use crate::stores::auth::use_auth;
 
 #[component]
 pub fn LoginScreen() -> Element {
-    let auth = use_auth_state();
+    let auth = use_auth();
     let login_status = auth.login_status.read();
 
     let is_loading = login_status.is_loading();

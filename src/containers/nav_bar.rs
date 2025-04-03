@@ -1,10 +1,13 @@
 use dioxus::prelude::*;
 
-use crate::router::Route;
+use crate::{router::Route, stores::auth::use_auth};
 
 #[component]
 pub fn ContainerNavBar() -> Element {
     let nav = use_navigator();
+    let auth = use_auth();
+
+    let user = auth.user.read();
 
     rsx! {
         nav {
@@ -31,10 +34,17 @@ pub fn ContainerNavBar() -> Element {
                             onclick: move |_| { nav.push(Route::AboutScreen {  }); },
                             "About"
                         },
-                        li {
-                            onclick: move |_| { nav.push(Route::LoginScreen {  }); },
-                            "Login"
-                        },
+                        if user.is_some() {
+                            li {
+                                onclick: move |_| { nav.push(Route::ProfileScreen {  }); },
+                                "Profile"
+                            },
+                        } else {
+                            li {
+                                onclick: move |_| { nav.push(Route::LoginScreen {  }); },
+                                "Login"
+                            },
+                        }
                     }
                 }
             }
