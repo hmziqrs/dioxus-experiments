@@ -1,5 +1,5 @@
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub enum StateStatus {
+pub enum StateFrameStatus {
     Init,
     Loading,
     Success,
@@ -7,34 +7,50 @@ pub enum StateStatus {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct StateSlice<T: Clone> {
-    pub status: StateStatus,
+pub struct StateFrame<T: Clone> {
+    pub status: StateFrameStatus,
     pub data: Option<T>,
     pub message: Option<String>,
 }
 
-impl<T: Clone> StateSlice<T> {
+impl<T: Clone> StateFrame<T> {
     pub fn new() -> Self {
         Self {
-            status: StateStatus::Init,
+            status: StateFrameStatus::Init,
             data: None,
             message: None,
         }
     }
 
     pub fn is_init(&self) -> bool {
-        self.status == StateStatus::Init
+        self.status == StateFrameStatus::Init
     }
 
     pub fn is_loading(&self) -> bool {
-        self.status == StateStatus::Loading
+        self.status == StateFrameStatus::Loading
     }
 
     pub fn is_success(&self) -> bool {
-        self.status == StateStatus::Success
+        self.status == StateFrameStatus::Success
     }
 
     pub fn is_failed(&self) -> bool {
-        self.status == StateStatus::Failed
+        self.status == StateFrameStatus::Failed
+    }
+
+    pub fn set_loading(&mut self, message: Option<String>) {
+        self.status = StateFrameStatus::Loading;
+        self.message = message;
+    }
+
+    pub fn set_success(&mut self, data: Option<T>, message: Option<String>) {
+        self.status = StateFrameStatus::Success;
+        self.data = data;
+        self.message = message;
+    }
+
+    pub fn set_failed(&mut self, message: Option<String>) {
+        self.status = StateFrameStatus::Failed;
+        self.message = message;
     }
 }
