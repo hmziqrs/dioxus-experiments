@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 pub mod containers;
 pub mod router;
 pub mod screens;
+pub mod stores;
 
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");
 
