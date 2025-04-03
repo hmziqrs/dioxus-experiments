@@ -2,7 +2,6 @@ use std::collections::HashMap;
 
 use dioxus::prelude::*;
 
-use serde::Deserialize;
 use validator::{Validate, ValidationError, ValidationErrors};
 
 #[derive(Debug, Validate, Clone)]
@@ -53,8 +52,8 @@ impl FormModel for LoginForm {
 #[derive(Debug, Clone)]
 pub struct FieldSlice {
     name: String,
-    value: String,
-    error: Option<String>,
+    pub value: String,
+    pub error: Option<String>,
     default_value: String,
 
     focused: bool,
@@ -95,6 +94,8 @@ pub struct FormSlice<T: FormModel> {
     data: T,
     fields: HashMap<String, FieldSlice>,
     has_errors: bool,
+    pub active_field: Option<String>,
+
     submit_count: u32,
 }
 
@@ -110,6 +111,7 @@ impl<T: FormModel> FormSlice<T> {
         FormSlice {
             data,
             fields,
+            active_field: None,
             has_errors: false,
             submit_count: 0,
         }
@@ -139,6 +141,31 @@ impl<T: FormModel> FormSlice<T> {
 
     pub fn get_field(&self, name: &str) -> Option<&FieldSlice> {
         self.fields.get(name)
+    }
+
+    pub fn focus_field(&mut self, name: &str) {
+        self.active_field = Some(name.to_string());
+
+        for (field_name, field) in self.fields.iter_mut() {
+            if field_name == name {
+                field.touched = true;
+                field.focused = true;
+            } else {
+                field.focused = false;
+            }
+        }
+    }
+
+    pub fn blur_field(&mut self, name: &str) {
+        self.active_field = None;
+
+        if self.submit_count > 0 {
+            self.validate();
+        }
+
+        if let Some(field) = self.fields.get_mut(name) {
+            field.focused = false;
+        }
     }
 
     pub fn validate(&mut self) -> bool {
@@ -184,7 +211,7 @@ impl<T: FormModel> FormSlice<T> {
 }
 
 pub fn use_form(initial_state: LoginForm) -> Signal<FormSlice<LoginForm>> {
-    let form_slice = use_signal(|| FormSlice::new(initial_state));
+    let mut form_slice: Signal<FormSlice<LoginForm>> = use_signal(|| FormSlice::new(initial_state));
 
     form_slice
 }

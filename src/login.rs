@@ -8,8 +8,6 @@ use crate::{
 #[component]
 pub fn LoginScreen() -> Element {
     let mut form = use_form(LoginForm::new());
-    let mut email = use_signal(|| "user@example.com".to_string());
-    let mut password = use_signal(|| "password".to_string());
 
     let auth_store = use_auth_store();
     let auth_state = Store::use_store(&auth_store, |s| s.clone());
@@ -36,24 +34,38 @@ pub fn LoginScreen() -> Element {
                             label {
                                 class: "input",
                                 input {
-                                    value: email.read().clone(),
+                                    value: form.read().get_field("email").unwrap().value.clone(),
                                     type: "email",
                                     name: "email",
                                     class: "grow",
                                     placeholder: "Email address",
-                                    oninput: move |e| email.set(e.value().clone())
+                                    oninput: move |e| {
+                                        let mut form_data = form.write();
+                                        form_data.update_field("email", &e.value());
+                                    },
+                                    onfocusin: move |_| {
+                                        let mut form_data = form.write();
+                                        form_data.focus_field("email");
+                                    },
+                                    onfocusout: move |_| {
+                                        let mut form_data = form.write();
+                                        form_data.blur_field("email");
+                                    }
                                 }
                             },
                             div { class : "h-4" },
                             label {
                                 class: "input",
                                 input {
-                                    value: password.read().clone(),
+                                    value: form.read().get_field("password").unwrap().value.clone(),
                                     type: "password",
                                     name: "password",
                                     class: "grow",
                                     placeholder: "Password",
-                                    oninput: move |e| password.set(e.value().clone())
+                                    oninput: move |e| {
+                                        let mut form_data = form.write();
+                                        form_data.update_field("password", &e.value());
+                                    }
                                 }
                             },
                         }
@@ -68,13 +80,13 @@ pub fn LoginScreen() -> Element {
                                 class: "btn btn-primary",
                                 onclick: move |_| {
                                     // Clone the values we need to pass to the async block
-                                    let email_value = email.read().clone();
-                                    let password_value = password.read().clone();
+                                    let email = form.read().get_field("email").unwrap().value.clone();
+                                    let password = form.read().get_field("password").unwrap().value.clone();
                                     let actions = auth_actions.clone();
 
                                     spawn(async move {
                                         tracing::info!("login clicked");
-                                        actions.login(&email_value, &password_value).await;
+                                        actions.login(&email, &password).await;
                                     });
 
                                 },
