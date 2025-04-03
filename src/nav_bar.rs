@@ -18,7 +18,7 @@ pub fn NavBar() -> Element {
     ];
     let auth_store = use_auth_store();
     // let rc =
-    let auth_state = Store::use_store(&auth_store.inner(), |s| s.clone());
+    let auth_state = Store::use_store(&auth_store, |s| s.clone());
 
     let mut nav = use_navigator();
     let user = auth_state.user;
@@ -44,7 +44,7 @@ pub fn NavBar() -> Element {
                             tracing::info!("Logout");
                             let actions = auth_store.clone();
                             spawn(async move {
-                                actions.logout().await;
+                                // actions.logout().await;
                             });
                             tracing::info!("Logout-ppost");
                         },

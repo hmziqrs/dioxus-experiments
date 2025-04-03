@@ -177,9 +177,9 @@ impl Default for AuthState {
     }
 }
 
-// pub type AuthStore = Rc<Store<AuthState>>;
-#[derive(Clone)]
-pub struct AuthStore(Rc<Store<AuthState>>);
+pub type AuthStore = Rc<Store<AuthState>>;
+// #[derive(Clone)]
+// pub struct AuthStore(Rc<Store<AuthState>>);
 
 thread_local! {
     static AUTH_STORE: std::cell::OnceCell<AuthStore>  = std::cell::OnceCell::new();
@@ -188,24 +188,20 @@ thread_local! {
 pub fn use_auth_store() -> AuthStore {
     AUTH_STORE.with(|store| {
         store
-            .get_or_init(|| AuthStore(Store::new(AuthState::default())))
+            .get_or_init(|| Store::new(AuthState::default()))
             .clone()
     })
 }
 
-// #[derive(Clone)]
-// pub struct AuthActions {
-//     store: AuthStore,
-// }
+#[derive(Clone)]
+pub struct AuthActions {
+    store: AuthStore,
+}
 
-impl AuthStore {
-    pub fn inner(&self) -> Rc<Store<AuthState>> {
-        self.0.clone()
-    }
-
+impl AuthActions {
     pub async fn login(&self, email: String, password: String) {
         tracing::info!("Auth Actions: Logging in");
-        self.0.set(|state| {
+        self.store.set(|state| {
             state.login_status.status = StateStatus::Loading;
             state.login_status.message = None;
         });
@@ -214,7 +210,7 @@ impl AuthStore {
 
         // Simulate a successful login
         if email == "user@example.com" && password == "password" {
-            self.0.set(|state| {
+            self.store.set(|state| {
                 state.login_status.status = StateStatus::Success;
                 state.user = Some(User {
                     id: 1,
@@ -222,25 +218,25 @@ impl AuthStore {
                 });
             });
         } else {
-            self.0.set(|state| {
+            self.store.set(|state| {
                 state.login_status.status = StateStatus::Failed;
                 state.login_status.message = Some("Invalid email or password".to_string());
             });
         }
-        // let check = self.0.get_state().clone();
-        let checkx = use_auth_store().inner().get_state();
+        // let check = self.store.get_state().clone();
+        let checkx = use_auth_store().get_state();
         tracing::info!("AUTH ACTIONS login finish, {checkx:?}");
     }
 
     pub async fn logout(&self) {
         tracing::info!("Logout actions");
-        self.0.set(|state| {
+        self.store.set(|state| {
             state.logout_status.status = StateStatus::Loading;
         });
 
         tracing::info!("Logout actions-xx");
 
-        self.0.set(|state| {
+        self.store.set(|state| {
             state.logout_status.status = StateStatus::Success;
             state.user = None;
         });

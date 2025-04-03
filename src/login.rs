@@ -15,7 +15,7 @@ pub fn LoginScreen() -> Element {
     });
 
     let auth_store = use_auth_store();
-    let auth_state = Store::use_store(&auth_store.inner(), |s| s.clone());
+    let auth_state = Store::use_store(&auth_store, |s| s.clone());
 
     let loading = auth_state.login_status.is_loading();
 
@@ -88,7 +88,7 @@ pub fn LoginScreen() -> Element {
 
                                     spawn(async move {
                                         tracing::info!("login clicked");
-                                        actions.login(email, password).await;
+                                        // actions.login(email, password).await;
                                     });
 
                                 },
