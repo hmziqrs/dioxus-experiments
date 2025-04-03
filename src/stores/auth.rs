@@ -4,13 +4,13 @@ use dioxus::prelude::*;
 
 use super::StateFrame;
 
-struct AuthState {
-    user: GlobalSignal<Option<User>>,
+pub struct AuthState {
+    pub user: GlobalSignal<Option<User>>,
 
-    login_status: GlobalSignal<StateFrame<bool>>,
-    logout_status: GlobalSignal<StateFrame<bool>>,
+    pub login_status: GlobalSignal<StateFrame<bool>>,
+    pub logout_status: GlobalSignal<StateFrame<bool>>,
 
-    signup_status: GlobalSignal<StateFrame<bool>>,
+    pub signup_status: GlobalSignal<StateFrame<bool>>,
 }
 
 #[derive(Debug, Clone)]
