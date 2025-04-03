@@ -8,7 +8,6 @@
       --tw-rotate-z: rotateZ(0);
       --tw-skew-x: skewX(0);
       --tw-skew-y: skewY(0);
-      --tw-space-y-reverse: 0;
       --tw-space-x-reverse: 0;
       --tw-border-style: solid;
       --tw-font-weight: initial;
@@ -1716,13 +1715,6 @@
   .justify-end {
     justify-content: flex-end;
   }
-  .space-y-4 {
-    :where(& > :not(:last-child)) {
-      --tw-space-y-reverse: 0;
-      margin-block-start: calc(calc(var(--spacing) * 4) * var(--tw-space-y-reverse));
-      margin-block-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-y-reverse)));
-    }
-  }
   .space-x-4 {
     :where(& > :not(:last-child)) {
       --tw-space-x-reverse: 0;
@@ -1730,18 +1722,12 @@
       margin-inline-end: calc(calc(var(--spacing) * 4) * calc(1 - var(--tw-space-x-reverse)));
     }
   }
-  .self-center {
-    align-self: center;
-  }
   .rounded-md {
     border-radius: var(--radius-md);
   }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
-  }
-  .bg-base-100 {
-    background-color: var(--color-base-100);
   }
   .bg-base-200 {
     background-color: var(--color-base-200);
@@ -1770,10 +1756,6 @@
   .text-2xl {
     font-size: var(--text-2xl);
     line-height: var(--tw-leading, var(--text-2xl--line-height));
-  }
-  .text-4xl {
-    font-size: var(--text-4xl);
-    line-height: var(--tw-leading, var(--text-4xl--line-height));
   }
   .text-sm {
     font-size: var(--text-sm);
@@ -1828,13 +1810,6 @@
     &:hover {
       @media (hover: hover) {
         color: var(--color-gray-300);
-      }
-    }
-  }
-  .hover\:underline {
-    &:hover {
-      @media (hover: hover) {
-        text-decoration-line: underline;
       }
     }
   }
@@ -2082,11 +2057,6 @@ html {
   syntax: "*";
   inherits: false;
   initial-value: skewY(0);
-}
-@property --tw-space-y-reverse {
-  syntax: "*";
-  inherits: false;
-  initial-value: 0;
 }
 @property --tw-space-x-reverse {
   syntax: "*";

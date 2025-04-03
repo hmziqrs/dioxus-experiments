@@ -1,10 +1,10 @@
-use dioxus::{html::u::class, prelude::*};
+use dioxus::prelude::*;
 
 use crate::router::Route;
 
 #[component]
 pub fn ContainerNavBar() -> Element {
-    let mut nav = use_navigator();
+    let nav = use_navigator();
 
     rsx! {
         nav {
