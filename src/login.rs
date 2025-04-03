@@ -1,17 +1,21 @@
+use std::rc::Rc;
+
 use dioxus::{html::textarea::disabled, logger::tracing, prelude::*};
 
 use crate::{
-    store::{use_auth_actions, use_auth_store, AuthState, Store},
+    store::{use_auth_store, AuthState, Store},
     use_form::{use_form, LoginForm},
 };
 
 #[component]
 pub fn LoginScreen() -> Element {
-    let mut form = use_form(LoginForm::new());
+    let mut form = use_form(LoginForm {
+        email: "user@example.com".to_string(),
+        password: "password".to_string(),
+    });
 
     let auth_store = use_auth_store();
-    let auth_state = Store::use_store(&auth_store, |s| s.clone());
-    let auth_actions = use_auth_actions(&auth_store);
+    let auth_state = Store::use_store(&auth_store.inner(), |s| s.clone());
 
     let loading = auth_state.login_status.is_loading();
 
@@ -80,7 +84,7 @@ pub fn LoginScreen() -> Element {
                                     // Clone the values we need to pass to the async block
                                     let email = form.read().get_field("email").unwrap().value.clone();
                                     let password = form.read().get_field("password").unwrap().value.clone();
-                                    let actions = auth_actions.clone();
+                                    let actions = auth_store.clone();
 
                                     spawn(async move {
                                         tracing::info!("login clicked");

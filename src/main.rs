@@ -7,6 +7,7 @@ mod home;
 mod hot_dog;
 mod login;
 mod nav_bar;
+mod profile;
 mod server;
 mod store;
 mod use_form;
@@ -15,6 +16,7 @@ use home::HomePage;
 use hot_dog::DogApp;
 use login::LoginScreen;
 use nav_bar::NavBar;
+use profile::ProfileScreen;
 
 static CSS: Asset = asset!("/assets/tailwind.css");
 
@@ -34,6 +36,9 @@ enum Routes {
 
         #[route("/login")]
         LoginScreen {},
+
+        #[route("/profile")]
+        ProfileScreen {},
 
     #[end_layout]
     #[route("/:..segments")]
