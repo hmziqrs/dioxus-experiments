@@ -1,15 +1,19 @@
 use dioxus::{logger::tracing, prelude::*};
 
-use crate::stores::auth::use_auth;
+use crate::{hooks::use_previous, stores::auth::use_auth};
 
 #[component]
 pub fn LoginScreen() -> Element {
     let auth = use_auth();
     let login_status = auth.login_status.read();
-
     let is_loading = login_status.is_loading();
+    let prev_loading = use_previous(is_loading);
 
-    tracing::info!("login_status: {is_loading}");
+    tracing::info!("login_status: {is_loading} | {:?}", prev_loading);
+    //
+    use_effect(|| {
+        tracing::info!("LoginScreen rendered");
+    });
 
     rsx! {
         div {
@@ -68,7 +72,6 @@ pub fn LoginScreen() -> Element {
                     div {
                         class: "w-full  btn btn-primary",
                         onclick: move |_| {
-                            tracing::info!("testing");
                             spawn(async move {
                                 auth.login("hi".to_owned(), "to".to_owned()).await;
                             });

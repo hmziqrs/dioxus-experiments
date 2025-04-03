@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
 pub mod containers;
+pub mod hooks;
 pub mod router;
 pub mod screens;
 pub mod stores;
