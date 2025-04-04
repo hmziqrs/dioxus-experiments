@@ -157,9 +157,10 @@ impl<T: OxFormModel> OxForm<T> {
     }
 
     pub fn on_submit(&mut self, callback: impl Fn(T)) {
+        self.submit_count += 1;
+
         if self.validate() {
             callback(self.data.clone());
         }
-        self.submit_count += 1;
     }
 }

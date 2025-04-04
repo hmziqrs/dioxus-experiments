@@ -85,8 +85,11 @@ pub fn LoginScreen() -> Element {
                     div {
                         class: "w-full  btn btn-primary",
                         onclick: move |_| {
-                            spawn(async move {
-                                auth.login("hi".to_owned(), "to".to_owned()).await;
+                            ox_form.write().on_submit(move |val| {
+                                tracing::info!("{:?}",val);
+                                spawn(async move {
+                                    auth.login("hi".to_owned(), "to".to_owned()).await;
+                                });
                             });
                         },
                         "Login"

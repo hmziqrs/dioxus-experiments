@@ -51,7 +51,7 @@ where
                 p {
                     class: "my-2 text-sm text-error",
                     "Error"
-                    {field.name.clone()}
+                    {field.error.as_ref().unwrap().to_string()}
                     // "{field.error.unwrap()}"
                 }
             }
