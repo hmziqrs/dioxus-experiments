@@ -37,9 +37,9 @@ impl OxFieldFrame {
     }
 }
 
-pub trait OxFormModel: Validate + Clone {
+pub trait OxFormModel: Validate + Clone + PartialEq {
     fn to_map(&self) -> HashMap<String, String>;
-    fn update_field(&mut self, name: &str, value: &str);
+    fn update_field(&mut self, name: String, value: &str);
 }
 
 #[derive(Debug, Clone)]
@@ -49,7 +49,7 @@ pub struct OxForm<T: OxFormModel> {
     has_errors: bool,
     pub active_field: Option<String>,
 
-    submit_count: u32,
+    pub submit_count: u32,
 }
 
 impl<T: OxFormModel> OxForm<T> {
@@ -78,7 +78,7 @@ impl<T: OxFormModel> OxForm<T> {
         }
 
         // Update the underlying data model
-        self.data.update_field(name, &value);
+        self.data.update_field(name.to_string(), &value);
 
         // Validate after update
         self.validate();
@@ -112,9 +112,7 @@ impl<T: OxFormModel> OxForm<T> {
     pub fn blur_field(&mut self, name: &str) {
         self.active_field = None;
 
-        if self.submit_count > 0 {
-            self.validate();
-        }
+        self.validate();
 
         if let Some(field) = self.fields.get_mut(name) {
             field.focused = false;
@@ -122,6 +120,9 @@ impl<T: OxFormModel> OxForm<T> {
     }
 
     pub fn validate(&mut self) -> bool {
+        if self.submit_count == 0 {
+            return false;
+        }
         for field in self.fields.values_mut() {
             field.set_error(None);
         }

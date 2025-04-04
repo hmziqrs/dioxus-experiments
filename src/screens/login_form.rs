@@ -6,7 +6,7 @@ use validator::Validate;
 
 use crate::hooks::{OxForm, OxFormModel};
 
-#[derive(Debug, Validate, Clone)]
+#[derive(Debug, Validate, Clone, PartialEq)]
 pub struct LoginForm {
     #[validate(email(message = "Please enter a valid email address"))]
     pub email: String,
@@ -42,8 +42,8 @@ impl OxFormModel for LoginForm {
         map
     }
 
-    fn update_field(&mut self, name: &str, value: &str) {
-        match name {
+    fn update_field(&mut self, name: String, value: &str) {
+        match name.as_str() {
             "email" => self.email = value.to_string(),
             "password" => self.password = value.to_string(),
             _ => {}

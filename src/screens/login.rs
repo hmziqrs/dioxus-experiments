@@ -1,6 +1,7 @@
 use dioxus::{logger::tracing, prelude::*};
 
 use crate::{
+    components::{AppInput, AppInputProps},
     hooks::use_previous,
     screens::login_form::{use_login_form, LoginForm},
     stores::auth::use_auth,
@@ -56,17 +57,11 @@ pub fn LoginScreen() -> Element {
                             }
                         }
                     }
-                    div {
-                        class: "space-y-1",
-                        label {
-                            class: "block text-sm font-medium text-primary",
-                            "Password"
-                        }
-                        input {
-                            class: "w-full px-4 py-2 input",
-                            type: "password",
-                            placeholder: "Enter your password",
-                        }
+                    AppInput {
+                        name: "password",
+                        form: ox_form,
+                        label: "Password",
+                        placeholder: "Please input your password",
                     }
                     div {
                         class: "flex items-center justify-between",
