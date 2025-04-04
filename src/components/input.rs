@@ -50,9 +50,7 @@ where
             if field.error.is_some() {
                 p {
                     class: "my-2 text-sm text-error",
-                    "Error"
                     {field.error.as_ref().unwrap().to_string()}
-                    // "{field.error.unwrap()}"
                 }
             }
         }

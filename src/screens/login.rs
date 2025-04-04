@@ -29,33 +29,11 @@ pub fn LoginScreen() -> Element {
                 }
                 form {
                     class: "space-y-6",
-                    div {
-                        class: "space-y-1",
-                        label {
-                            class: "block text-sm font-medium text-primary",
-                            "Email"
-                        }
-                        input {
-                            type: "email",
-                            class: "w-full px-4 py-2 input",
-                            placeholder: "Enter your email",
-                            value: ox_form_state.get_field("email").unwrap().value.to_owned(),
-                            onchange: move |event| {
-                                ox_form.write().update_field("email", event.value());
-                            },
-                            onblur: move |_| {
-                                ox_form.write().blur_field("email");
-                            },
-                            onfocus: move |_| {
-                                ox_form.write().focus_field("email");
-                            }
-                        }
-                        if ox_form_state.get_field("email").unwrap().has_error() {
-                            p {
-                                class: "text-sm text-error",
-                                {email_error.unwrap()}
-                            }
-                        }
+                    AppInput {
+                        name: "email",
+                        form: ox_form,
+                        label: "Email",
+                        placeholder: "Please input your email",
                     }
                     AppInput {
                         name: "password",
