@@ -23,8 +23,6 @@ where
     let name_ob = props.name.clone();
     let name_of = props.name.clone();
 
-    tracing::info!(" error:{:?}", field.error);
-
     rsx! {
         div {
             if props.label.is_some() {

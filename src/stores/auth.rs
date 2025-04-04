@@ -1,5 +1,7 @@
 use super::StateFrame;
 use dioxus::prelude::*;
+use gloo_storage::{LocalStorage, Storage};
+use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
 pub struct AuthState {
@@ -11,12 +13,14 @@ pub struct AuthState {
     pub signup_status: GlobalSignal<StateFrame<bool>>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct User {
     id: i32,
     name: String,
     email: String,
 }
+
+const CACHE_AUTH_KEY: &str = "app/auth_user";
 
 impl User {
     pub fn new(id: i32, name: String, email: String) -> Self {
@@ -45,7 +49,12 @@ impl AuthState {
 
         match response {
             Ok(_) => {
-                *self.user.write() = Some(User::dev());
+                let user = User::dev();
+
+                let user_json = serde_json::to_string(&user).unwrap();
+                LocalStorage::set(CACHE_AUTH_KEY, user_json).unwrap();
+
+                *self.user.write() = Some(user);
                 self.login_status.write().set_success(None, None);
             }
             Err(_) => {

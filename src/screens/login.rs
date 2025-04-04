@@ -9,14 +9,15 @@ use crate::{
 
 #[component]
 pub fn LoginScreen() -> Element {
-    let mut ox_form = use_login_form(LoginForm::new());
+    let mut ox_form = use_login_form(LoginForm::dev());
     let auth = use_auth();
     let login_status = auth.login_status.read();
     let is_loading = login_status.is_loading();
     let prev_loading = use_previous(is_loading);
 
-    let ox_form_state = ox_form.read();
-    let email_error = ox_form_state.get_field("email").unwrap().error.clone();
+    use_effect(move || {
+        tracing::info!("is:{} prev:{:?}", is_loading, prev_loading);
+    });
 
     rsx! {
         div {
@@ -60,17 +61,21 @@ pub fn LoginScreen() -> Element {
                             "Forgot password?"
                         }
                     }
-                    div {
-                        class: "w-full  btn btn-primary",
-                        onclick: move |_| {
+                    button {
+                        disabled: is_loading,
+                        class: "w-full btn btn-primary",
+                        onclick: move |e| {
+                            e.prevent_default();
                             ox_form.write().on_submit(move |val| {
-                                tracing::info!("{:?}",val);
                                 spawn(async move {
-                                    auth.login("hi".to_owned(), "to".to_owned()).await;
+                                    auth.login(val.email, val.password).await;
                                 });
                             });
                         },
-                        "Login"
+                        if is_loading {
+                            div { class: "loading loading-spinner loading-xs" }
+                        }
+                        span { "Login" },
                     }
                 }
                 p {

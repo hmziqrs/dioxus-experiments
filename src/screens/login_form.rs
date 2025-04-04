@@ -23,13 +23,10 @@ impl LoginForm {
         }
     }
 
-    pub fn from_map(map: HashMap<String, String>) -> Self {
-        let email = map.get("email").unwrap();
-        let password = map.get("password").unwrap();
-
+    pub fn dev() -> Self {
         LoginForm {
-            email: email.clone(),
-            password: password.clone(),
+            email: String::from("dev@example.com"),
+            password: String::from("password"),
         }
     }
 }
