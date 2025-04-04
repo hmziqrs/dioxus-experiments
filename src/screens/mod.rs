@@ -1,6 +1,7 @@
 mod about;
 mod home;
 mod login;
+mod login_form;
 mod not_found;
 mod profile;
 

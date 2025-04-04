@@ -1,6 +1,4 @@
-use std::rc::Rc;
-
-use dioxus::{html::textarea::disabled, logger::tracing, prelude::*};
+use dioxus::{logger::tracing, prelude::*};
 
 use crate::{
     store::{use_auth_store, AuthState, Store},

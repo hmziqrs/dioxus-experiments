@@ -1,19 +1,21 @@
 use dioxus::{logger::tracing, prelude::*};
 
-use crate::{hooks::use_previous, stores::auth::use_auth};
+use crate::{
+    hooks::use_previous,
+    screens::login_form::{use_login_form, LoginForm},
+    stores::auth::use_auth,
+};
 
 #[component]
 pub fn LoginScreen() -> Element {
+    let mut ox_form = use_login_form(LoginForm::new());
     let auth = use_auth();
     let login_status = auth.login_status.read();
     let is_loading = login_status.is_loading();
     let prev_loading = use_previous(is_loading);
 
-    tracing::info!("login_status: {is_loading} | {:?}", prev_loading);
-    //
-    use_effect(|| {
-        tracing::info!("LoginScreen rendered");
-    });
+    let ox_form_state = ox_form.read();
+    let email_error = ox_form_state.get_field("email").unwrap().error.clone();
 
     rsx! {
         div {
@@ -33,9 +35,25 @@ pub fn LoginScreen() -> Element {
                             "Email"
                         }
                         input {
-                            class: "w-full px-4 py-2 border rounded-md input input-bordered focus:outline-none focus:ring-2 focus:ring-primary",
                             type: "email",
+                            class: "w-full px-4 py-2 input",
                             placeholder: "Enter your email",
+                            value: ox_form_state.get_field("email").unwrap().value.to_owned(),
+                            onchange: move |event| {
+                                ox_form.write().update_field("email", event.value());
+                            },
+                            onblur: move |_| {
+                                ox_form.write().blur_field("email");
+                            },
+                            onfocus: move |_| {
+                                ox_form.write().focus_field("email");
+                            }
+                        }
+                        if ox_form_state.get_field("email").unwrap().has_error() {
+                            p {
+                                class: "text-sm text-error",
+                                {email_error.unwrap()}
+                            }
                         }
                     }
                     div {
@@ -45,7 +63,7 @@ pub fn LoginScreen() -> Element {
                             "Password"
                         }
                         input {
-                            class: "w-full px-4 py-2 border rounded-md input input-bordered focus:outline-none focus:ring-2 focus:ring-primary",
+                            class: "w-full px-4 py-2 input",
                             type: "password",
                             placeholder: "Enter your password",
                         }

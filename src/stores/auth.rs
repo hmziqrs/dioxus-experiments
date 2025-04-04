@@ -1,8 +1,6 @@
-use std::sync::OnceLock;
-
-use dioxus::prelude::*;
-
 use super::StateFrame;
+use dioxus::prelude::*;
+use std::sync::OnceLock;
 
 pub struct AuthState {
     pub user: GlobalSignal<Option<User>>,
