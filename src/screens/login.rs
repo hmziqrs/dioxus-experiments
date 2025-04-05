@@ -1,7 +1,7 @@
 use dioxus::{logger::tracing, prelude::*};
 
 use crate::{
-    components::{AppInput, AppInputProps},
+    components::AppInput,
     hooks::use_previous,
     screens::login_form::{use_login_form, LoginForm},
     stores::auth::use_auth,
