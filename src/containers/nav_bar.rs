@@ -27,21 +27,25 @@ pub fn ContainerNavBar() -> Element {
                     ul {
                         class: "menu menu-horizontal space-x-4 cursor-pointer [&>li]:hover:underline",
                         li {
-                            onclick: move |_| { nav.push(Route::HomeScreen {  }); },
+                            onclick: move |_| { nav.push(Route::HomeScreen {}); },
                             "Home"
                         },
                         li {
-                            onclick: move |_| { nav.push(Route::AboutScreen {  }); },
+                            onclick: move |_| { nav.push(Route::AboutScreen {}); },
                             "About"
+                        },
+                        li {
+                            onclick: move |_| { nav.push(Route::BlogScreen {}); },
+                            "Blog"
                         },
                         if user.is_some() {
                             li {
-                                onclick: move |_| { nav.push(Route::ProfileScreen {  }); },
+                                onclick: move |_| { nav.push(Route::ProfileScreen {}); },
                                 "Profile"
                             },
                         } else {
                             li {
-                                onclick: move |_| { nav.push(Route::LoginScreen {  }); },
+                                onclick: move |_| { nav.push(Route::LoginScreen {}); },
                                 "Login"
                             },
                         }
