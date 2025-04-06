@@ -3,6 +3,7 @@ use dioxus::prelude::*;
 
 #[component]
 pub fn PostScreen(id: i32) -> Element {
+    let nav = use_navigator();
     let posts = use_posts();
     let post_ref = posts.current_post.read();
     let post_state = post_ref.get(&id).cloned().unwrap_or_default();
@@ -54,7 +55,7 @@ pub fn PostScreen(id: i32) -> Element {
                             button {
                                 class: "btn btn-outline btn-primary",
                                 onclick: move |_| {
-                                    // Navigate back to all posts
+                                    nav.go_back();
                                 },
                                 "Back to Posts"
                             }
