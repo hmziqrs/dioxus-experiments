@@ -1,4 +1,7 @@
-use crate::stores::post::use_posts;
+use crate::{
+    server::fetch_post_by_id,
+    stores::{post::use_posts, StateFrame},
+};
 use dioxus::prelude::*;
 
 #[component]
@@ -6,11 +9,22 @@ pub fn PostScreen(id: i32) -> Element {
     let nav = use_navigator();
     let posts = use_posts();
     let post_ref = posts.current_post.read();
-    let post_state = post_ref.get(&id).cloned().unwrap_or_default();
+    let server_cache = use_server_future(move || fetch_post_by_id(id))?;
+    let server_peek = server_cache.peek();
+    let post_state = if let Ok(Some(cached)) = server_peek.as_ref().unwrap() {
+        StateFrame::new_with_data(Some(cached.clone()))
+    } else {
+        post_ref.get(&id).cloned().unwrap_or_default()
+    };
+
+    let post_success = post_state.is_success();
 
     use_effect(move || {
+        if post_success {
+            return;
+        }
         spawn(async move {
-            posts.fetch_post(id).await;
+            _ = posts.fetch_post(id).await;
         });
     });
 
