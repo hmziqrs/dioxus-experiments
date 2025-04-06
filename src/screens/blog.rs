@@ -1,5 +1,5 @@
-use crate::stores::post::use_posts;
-use dioxus::{logger::tracing, prelude::*};
+use crate::{router::Route, stores::post::use_posts};
+use dioxus::prelude::*;
 
 #[component]
 pub fn BlogScreen() -> Element {
@@ -39,10 +39,11 @@ pub fn BlogScreen() -> Element {
                     }
                 } else if posts_state.data.is_some() {
                     div {
-                        class: "posts space-y-6",
+                        class: "posts space-y-4",
                         for post in posts_list.unwrap() {
-                            div {
-                                class: "post",
+                            Link {
+                                class: "block",
+                                to: Route::PostScreen { id: post.id.to_string() },
                                 h2 {
                                     class: "text-2xl mb-2",
                                     "{post.title}"
