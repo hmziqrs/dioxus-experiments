@@ -23,7 +23,7 @@ pub enum Route {
     BlogScreen {},
 
     #[route("/post/:id")]
-    PostScreen { id: String },
+    PostScreen { id: i32 },
 
     // #[end_layout]
 

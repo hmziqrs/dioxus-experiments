@@ -43,7 +43,7 @@ pub fn BlogScreen() -> Element {
                         for post in posts_list.unwrap() {
                             Link {
                                 class: "block",
-                                to: Route::PostScreen { id: post.id.to_string() },
+                                to: Route::PostScreen { id: post.id },
                                 h2 {
                                     class: "text-2xl mb-2",
                                     "{post.title}"
