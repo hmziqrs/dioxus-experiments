@@ -65,11 +65,9 @@ pub async fn fetch_all_posts() -> Result<Vec<Post>, ServerFnError> {
 }
 
 #[server]
-pub async fn fetch_post_by_id(id: i32) -> Result<Post, ServerFnError> {
+pub async fn fetch_post_by_id(id: i32) -> Result<Option<Post>, ServerFnError> {
     tokio::time::sleep(std::time::Duration::from_secs(1)).await;
 
-    Ok(posts()
-        .into_iter()
-        .find(|post| post.id == id)
-        .ok_or(ServerFnError::NotFound)?)
+    Ok(posts().into_iter().find(|post| post.id == id))
+    // .ok_or(ServerFnError::NotFound)?)
 }

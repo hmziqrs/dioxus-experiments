@@ -18,7 +18,7 @@ axum = { version = "0.8.3", optional = true }
 
 
 [features]
-default = []
+default = ["web"]
 web = ["dioxus/web"]
 desktop = ["dioxus/desktop"]
 mobile = ["dioxus/mobile"]

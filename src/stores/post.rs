@@ -2,7 +2,7 @@ use crate::server::{fetch_all_posts, fetch_post_by_id};
 
 // hot_dog/src/stores/posts.rs
 use super::StateFrame;
-use dioxus::prelude::*;
+use dioxus::{logger::tracing, prelude::*};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
@@ -43,6 +43,7 @@ impl PostsState {
                 self.all_posts.write().set_success(Some(posts), None);
             }
             Err(e) => {
+                tracing::error!("Failed to fetch posts: {}", e);
                 self.all_posts
                     .write()
                     .set_failed(Some(format!("Failed to fetch posts: {}", e)));
@@ -57,8 +58,13 @@ impl PostsState {
         let response = fetch_post_by_id(id).await;
 
         match response {
-            Ok(post) => {
+            Ok(Some(post)) => {
                 self.current_post.write().set_success(Some(post), None);
+            }
+            Ok(None) => {
+                self.current_post
+                    .write()
+                    .set_failed(Some(format!("Post not found")));
             }
             Err(e) => {
                 self.current_post
