@@ -5,6 +5,7 @@ pub mod containers;
 pub mod hooks;
 pub mod router;
 pub mod screens;
+pub mod server;
 pub mod stores;
 
 const TAILWIND_CSS: Asset = asset!("/assets/tailwind.css");

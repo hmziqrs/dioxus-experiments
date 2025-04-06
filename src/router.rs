@@ -19,9 +19,14 @@ pub enum Route {
     #[route("/profile")]
     ProfileScreen {},
 
+    #[route("/blog")]
+    BlogScreen {},
+
+    #[route("/post/:id")]
+    PostScreen { id: i32 },
 
     // #[end_layout]
 
-    // #[route("/:..route")]
-    // NotFoundScreen { route: Vec<String> }
+    #[route("/:..route")]
+    NotFoundScreen { route: Vec<String> }
 }
