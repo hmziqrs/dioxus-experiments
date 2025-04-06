@@ -13,11 +13,37 @@ pub struct StateFrame<T: Clone> {
     pub message: Option<String>,
 }
 
+impl<T: Clone> Default for StateFrame<T> {
+    fn default() -> Self {
+        Self {
+            status: StateFrameStatus::Init,
+            data: None,
+            message: None,
+        }
+    }
+}
+
 impl<T: Clone> StateFrame<T> {
     pub fn new() -> Self {
         Self {
             status: StateFrameStatus::Init,
             data: None,
+            message: None,
+        }
+    }
+
+    pub fn new_with_loading(message: Option<String>) -> Self {
+        Self {
+            status: StateFrameStatus::Loading,
+            data: None,
+            message,
+        }
+    }
+
+    pub fn new_with_data(data: Option<T>) -> Self {
+        Self {
+            status: StateFrameStatus::Success,
+            data,
             message: None,
         }
     }

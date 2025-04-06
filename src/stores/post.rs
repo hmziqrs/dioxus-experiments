@@ -4,11 +4,11 @@ use crate::server::{fetch_all_posts, fetch_post_by_id};
 use super::StateFrame;
 use dioxus::{logger::tracing, prelude::*};
 use serde::{Deserialize, Serialize};
-use std::sync::OnceLock;
+use std::{collections::HashMap, sync::OnceLock};
 
 pub struct PostsState {
     pub all_posts: GlobalSignal<StateFrame<Vec<Post>>>,
-    pub current_post: GlobalSignal<StateFrame<Post>>,
+    pub current_post: GlobalSignal<HashMap<i32, StateFrame<Post>>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -28,7 +28,7 @@ impl PostsState {
     pub fn new() -> Self {
         PostsState {
             all_posts: GlobalSignal::new(|| StateFrame::<Vec<Post>>::new()),
-            current_post: GlobalSignal::new(|| StateFrame::<Post>::new()),
+            current_post: GlobalSignal::new(|| HashMap::<i32, StateFrame<Post>>::new()),
         }
     }
 
@@ -52,23 +52,41 @@ impl PostsState {
     }
 
     pub async fn fetch_post(&self, id: i32) {
-        self.current_post.write().set_loading(None);
+        if !self.current_post.peek().contains_key(&id) {
+            self.current_post
+                .write()
+                .insert(id, StateFrame::new_with_loading(None));
+        } else {
+            self.current_post
+                .write()
+                .get_mut(&id)
+                .unwrap()
+                .set_loading(None);
+        }
 
         // In a real app, this would be an API call to fetch a specific post
         let response = fetch_post_by_id(id).await;
 
         match response {
             Ok(Some(post)) => {
-                self.current_post.write().set_success(Some(post), None);
+                self.current_post
+                    .write()
+                    .get_mut(&id)
+                    .unwrap()
+                    .set_success(Some(post), None);
             }
             Ok(None) => {
                 self.current_post
                     .write()
+                    .get_mut(&id)
+                    .unwrap()
                     .set_failed(Some(format!("Post not found")));
             }
             Err(e) => {
                 self.current_post
                     .write()
+                    .get_mut(&id)
+                    .unwrap()
                     .set_failed(Some(format!("Failed to fetch post: {}", e)));
             }
         }

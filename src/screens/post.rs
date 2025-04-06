@@ -4,7 +4,8 @@ use dioxus::prelude::*;
 #[component]
 pub fn PostScreen(id: i32) -> Element {
     let posts = use_posts();
-    let post_state = posts.current_post.read();
+    let post_ref = posts.current_post.read();
+    let post_state = post_ref.get(&id).cloned().unwrap_or_default();
 
     use_effect(move || {
         spawn(async move {
