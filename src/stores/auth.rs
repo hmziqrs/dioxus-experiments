@@ -1,6 +1,6 @@
 use super::StateFrame;
 use dioxus::prelude::*;
-use gloo_storage::{LocalStorage, Storage};
+use gloo_storage::{errors::StorageError, LocalStorage, Storage};
 use serde::{Deserialize, Serialize};
 use std::sync::OnceLock;
 
@@ -11,6 +11,7 @@ pub struct AuthState {
     pub logout_status: GlobalSignal<StateFrame<bool>>,
 
     pub signup_status: GlobalSignal<StateFrame<bool>>,
+    pub init_status: GlobalSignal<StateFrame<bool>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -39,6 +40,26 @@ impl AuthState {
             login_status: GlobalSignal::new(|| StateFrame::<bool>::new()),
             logout_status: GlobalSignal::new(|| StateFrame::<bool>::new()),
             signup_status: GlobalSignal::new(|| StateFrame::<bool>::new()),
+            init_status: GlobalSignal::new(|| StateFrame::<bool>::new()),
+        }
+    }
+
+    pub async fn init(&self) {
+        self.init_status.write().set_loading(None);
+
+        let cache: Result<String, StorageError> = LocalStorage::get(CACHE_AUTH_KEY);
+
+        gloo_timers::future::TimeoutFuture::new(1000).await;
+
+        match cache {
+            Ok(cached_user) => {
+                let user: User = serde_json::from_str(&cached_user).unwrap();
+                *self.user.write() = Some(user);
+                self.init_status.write().set_success(None, None);
+            }
+            Err(_) => {
+                self.init_status.write().set_failed(None);
+            }
         }
     }
 

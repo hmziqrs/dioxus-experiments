@@ -30,3 +30,6 @@ pub enum Route {
     #[route("/:..route")]
     NotFoundScreen { route: Vec<String> }
 }
+
+pub static AUTH_ROUTES: std::sync::LazyLock<Vec<Route>> =
+    std::sync::LazyLock::new(|| vec![Route::ProfileScreen {}]);
