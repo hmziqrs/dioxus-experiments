@@ -44,6 +44,17 @@ impl AuthState {
         }
     }
 
+    pub async fn logout(&self) {
+        self.logout_status.write().set_loading(None);
+
+        LocalStorage::delete(CACHE_AUTH_KEY);
+
+        gloo_timers::future::TimeoutFuture::new(1000).await;
+
+        self.logout_status.write().set_success(None, None);
+        *self.user.write() = None;
+    }
+
     pub async fn init(&self) {
         self.init_status.write().set_loading(None);
 

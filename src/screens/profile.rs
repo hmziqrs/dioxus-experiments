@@ -14,6 +14,15 @@ pub fn ProfileScreen() -> Element {
             div {
                 h1 { "Profile" },
                 p { "Welcome: {user:?}" },
+                button {
+                    class: "btn btn-primary",
+                    onclick: move |_| {
+                        spawn(async move {
+                            auth.logout().await;
+                        });
+                    },
+                    "Logout",
+                }
             }
         }
     } else {
